@@ -87,6 +87,10 @@ public class OrderItem {
         this.subtotal = subtotal;
     }
 
+    public UUID getProductId() {
+        return this.product.getProductId();
+    }
+
     @PrePersist
     @PreUpdate
     private void calculateSubtotal() {
