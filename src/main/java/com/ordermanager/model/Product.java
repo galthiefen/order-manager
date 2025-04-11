@@ -1,17 +1,14 @@
-package com.example.orderservice.model;
+package com.ordermanager.model;
 
 import jakarta.persistence.*;
-//import lombok.*;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import static java.time.ZoneOffset.UTC;
+
 @Entity
 @Table(name = "products")
-//@NoArgsConstructor
-//@AllArgsConstructor
-//@Builder
 public class Product {
 
     @Id
@@ -35,7 +32,10 @@ public class Product {
     private String category;
 
     @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now(UTC);
+
+    @Column(name = "updated_at",nullable = false)
+    private LocalDateTime updatedAt;
 
     public UUID getProductId() {
         return productId;
@@ -91,5 +91,13 @@ public class Product {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

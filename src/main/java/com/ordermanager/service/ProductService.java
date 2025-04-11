@@ -1,7 +1,7 @@
-package com.example.orderservice.service;
+package com.ordermanager.service;
 
-import com.example.orderservice.model.Product;
-import com.example.orderservice.repository.ProductRepository;
+import com.ordermanager.model.Product;
+import com.ordermanager.repository.ProductRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
