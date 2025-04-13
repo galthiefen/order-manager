@@ -78,17 +78,20 @@ class OrderServiceTest {
 
     @Test
     void shouldCreateOrder() {
+        final String productName = "Test Create Product";
         Order order = new Order();
         OrderItem item = new OrderItem();
         Product product = new Product();
         product.setProductId(UUID.randomUUID());
+        product.setName(productName);
         product.setInventoryCount(10);
         product.setPrice(BigDecimal.valueOf(100));
+        item.setProductName(productName);
         item.setProduct(product);
         item.setQuantity(2);
         order.setOrderItems(List.of(item));
 
-        when(productRepository.findById(product.getProductId())).thenReturn(Optional.of(product));
+        when(productRepository.findByName(productName)).thenReturn(Optional.of(product));
         when(orderRepository.save(order)).thenReturn(order);
 
         Order result = orderService.createOrder(order);
@@ -100,16 +103,20 @@ class OrderServiceTest {
 
     @Test
     void shouldThrowExceptionWhenCreatingOrderWithInsufficientStock() {
+        final String productName = "Test Create Product";
         Order order = new Order();
         OrderItem item = new OrderItem();
         Product product = new Product();
         product.setProductId(UUID.randomUUID());
-        product.setInventoryCount(2);
+        product.setName(productName);
+        product.setInventoryCount(1);
+        product.setPrice(BigDecimal.valueOf(100));
+        item.setProductName(productName);
         item.setProduct(product);
-        item.setQuantity(5);
+        item.setQuantity(2);
         order.setOrderItems(List.of(item));
 
-        when(productRepository.findById(product.getProductId())).thenReturn(Optional.of(product));
+        when(productRepository.findByName(productName)).thenReturn(Optional.of(product));
 
         assertThrows(IllegalArgumentException.class, () -> orderService.createOrder(order));
         verify(productRepository, never()).save(product);

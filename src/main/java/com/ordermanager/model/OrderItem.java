@@ -40,7 +40,18 @@ public class OrderItem {
     private LocalDateTime createdAt = LocalDateTime.now(UTC);
 
     @Column(name = "updated_at",nullable = false)
-    private LocalDateTime updatedAt;
+    private LocalDateTime updatedAt = LocalDateTime.now(UTC);
+
+    @Transient
+    private String productName;
+
+    public String getProductName() {
+        return productName;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
 
     public UUID getOrderItemId() {
         return orderItemId;
