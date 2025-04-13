@@ -34,35 +34,11 @@ public class OrderService {
         return getOrderByOrderId(orderId);
     }
 
-//    @Transactional
-//    public Order createOrder(Order order) {
-//        BigDecimal totalAmount = BigDecimal.ZERO;
-//
-//        for (OrderItem item : order.getOrderItems()) {
-//            Product product = getProductByProductId(item.getProductId());
-//
-//            if (product.getInventoryCount() < item.getQuantity()) {
-//                throw new IllegalArgumentException("Insufficient stock for product: " + product.getName());
-//            }
-//
-//            product.setInventoryCount(product.getInventoryCount() - item.getQuantity());
-//            productRepository.save(product);
-//
-//            item.setUnitPrice(product.getPrice());
-//            item.setSubtotal(product.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())));
-//            totalAmount = totalAmount.add(item.getSubtotal());
-//        }
-//
-//        order.setTotalAmount(totalAmount);
-//        return orderRepository.save(order);
-//    }
-
     @Transactional
     public Order createOrder(Order order) {
         BigDecimal totalAmount = BigDecimal.ZERO;
 
         for (OrderItem item : order.getOrderItems()) {
-            // Cerca il prodotto in base al nome
             Product product = productRepository.findByName(item.getProductName())
                     .orElseThrow(() -> new EntityNotFoundException("Product not found: " + item.getProductName()));
 
@@ -70,11 +46,9 @@ public class OrderService {
                 throw new IllegalArgumentException("Insufficient stock for product: " + product.getName());
             }
 
-            // Aggiorna l'inventario
             product.setInventoryCount(product.getInventoryCount() - item.getQuantity());
             productRepository.save(product);
 
-            // Imposta i dettagli dell'ordine
             item.setProduct(product);
             item.setUnitPrice(product.getPrice());
             item.setSubtotal(product.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())));
