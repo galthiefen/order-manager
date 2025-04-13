@@ -1,5 +1,6 @@
 package com.ordermanager.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -39,6 +40,7 @@ public class Order {
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "order", fetch = FetchType.LAZY)
+    @JsonManagedReference("order-orderItems")
     private List<OrderItem> orderItems;
 
     public UUID getOrderId() {

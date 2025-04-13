@@ -1,8 +1,10 @@
 package com.ordermanager.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import static java.time.ZoneOffset.UTC;
@@ -36,6 +38,10 @@ public class Product {
 
     @Column(name = "updated_at",nullable = false)
     private LocalDateTime updatedAt;
+
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
+    @JsonManagedReference("product-orderItems")
+    private List<OrderItem> orderItems;
 
     public UUID getProductId() {
         return productId;
@@ -99,5 +105,13 @@ public class Product {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public List<OrderItem> getOrderItems() {
+        return orderItems;
+    }
+
+    public void setOrderItems(List<OrderItem> orderItems) {
+        this.orderItems = orderItems;
     }
 }
