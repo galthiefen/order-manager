@@ -37,7 +37,7 @@ public class Product {
     private LocalDateTime createdAt = LocalDateTime.now(UTC);
 
     @Column(name = "updated_at",nullable = false)
-    private LocalDateTime updatedAt;
+    private LocalDateTime updatedAt = LocalDateTime.now(UTC);
 
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
     @JsonManagedReference("product-orderItems")

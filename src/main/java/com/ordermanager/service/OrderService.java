@@ -39,7 +39,8 @@ public class OrderService {
         BigDecimal totalAmount = BigDecimal.ZERO;
 
         for (OrderItem item : order.getOrderItems()) {
-            Product product = getProductByProductId(item.getProductId());
+            Product product = productRepository.findByName(item.getProductName())
+                    .orElseThrow(() -> new EntityNotFoundException("Product not found: " + item.getProductName()));
 
             if (product.getInventoryCount() < item.getQuantity()) {
                 throw new IllegalArgumentException("Insufficient stock for product: " + product.getName());
@@ -48,6 +49,7 @@ public class OrderService {
             product.setInventoryCount(product.getInventoryCount() - item.getQuantity());
             productRepository.save(product);
 
+            item.setProduct(product);
             item.setUnitPrice(product.getPrice());
             item.setSubtotal(product.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())));
             totalAmount = totalAmount.add(item.getSubtotal());
