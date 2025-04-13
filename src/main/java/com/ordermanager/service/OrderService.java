@@ -61,14 +61,12 @@ public class OrderService {
     public Order updateOrder(UUID orderId, Order updatedOrder) {
         Order existingOrder = getOrderByOrderId(orderId);
 
-        // Restore stock for existing order items
         for (OrderItem item : existingOrder.getOrderItems()) {
             Product product = getProductByProductId(item.getProductId());
             product.setInventoryCount(product.getInventoryCount() + item.getQuantity());
             productRepository.save(product);
         }
 
-        // Update order details
         existingOrder.setStatus(updatedOrder.getStatus());
         existingOrder.setShippingAddress(updatedOrder.getShippingAddress());
         existingOrder.setPaymentMethod(updatedOrder.getPaymentMethod());
@@ -98,7 +96,6 @@ public class OrderService {
     public void deleteOrder(UUID orderId) {
         Order order = getOrderByOrderId(orderId);
 
-        // Restore stock for order items
         for (OrderItem item : order.getOrderItems()) {
             Product product = getProductByProductId(item.getProductId());
             product.setInventoryCount(product.getInventoryCount() + item.getQuantity());

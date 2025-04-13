@@ -105,7 +105,6 @@ class ProductServiceTest {
 
     @Test
     void updateProduct_shouldReturnUpdatedProduct_whenProductExists() {
-        // Given: un prodotto esistente
         Product existingProduct = new Product();
         existingProduct.setProductId(UUID.randomUUID());
         existingProduct.setName("Old Product");
@@ -155,9 +154,7 @@ class ProductServiceTest {
 
         when(productRepository.findById(fakeId)).thenReturn(Optional.empty());
 
-        Exception exception = assertThrows(RuntimeException.class, () -> {
-            productService.updateProduct(fakeId, updatedProduct);
-        });
+        Exception exception = assertThrows(RuntimeException.class, () -> productService.updateProduct(fakeId, updatedProduct));
 
         assertEquals("Product not found", exception.getMessage());
         verify(productRepository).findById(fakeId);
@@ -186,9 +183,7 @@ class ProductServiceTest {
         when(productRepository.findById(nonExistentProductId))
                 .thenReturn(Optional.empty());
 
-        assertThrows(EntityNotFoundException.class, () -> {
-            productService.deleteProduct(nonExistentProductId);
-        });
+        assertThrows(EntityNotFoundException.class, () -> productService.deleteProduct(nonExistentProductId));
     }
 
 }
