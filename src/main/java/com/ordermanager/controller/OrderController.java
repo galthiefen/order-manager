@@ -1,7 +1,7 @@
 package com.ordermanager.controller;
 
-import com.ordermanager.dto.DateRangeRequest;
-import com.ordermanager.dto.NameDescriptionRequest;
+import com.ordermanager.dto.DateRangeRequestDTO;
+import com.ordermanager.dto.NameDescriptionRequestDTO;
 import com.ordermanager.model.Order;
 import com.ordermanager.service.OrderService;
 import org.springframework.http.ResponseEntity;
@@ -47,12 +47,12 @@ public class OrderController {
     }
 
     @GetMapping("/search-by-name-description")
-    public ResponseEntity<List<Order>> searchOrdersByNameAndDescription(@RequestBody NameDescriptionRequest nameDescriptionRequest) {
+    public ResponseEntity<List<Order>> searchOrdersByNameAndDescription(@RequestBody NameDescriptionRequestDTO nameDescriptionRequest) {
         return ResponseEntity.ok(orderService.searchOrdersByNameAndDescription(nameDescriptionRequest.getName(), nameDescriptionRequest.getDescription()));
     }
 
     @GetMapping("/filter-by-date-range")
-    public ResponseEntity<List<Order>> filterOrdersByDateRange(@RequestBody DateRangeRequest dateRangeRequest) {
+    public ResponseEntity<List<Order>> filterOrdersByDateRange(@RequestBody DateRangeRequestDTO dateRangeRequest) {
         return ResponseEntity.ok(orderService.filterOrdersByDateRange(dateRangeRequest.getStartDate(), dateRangeRequest.getEndDate()));
     }
 }

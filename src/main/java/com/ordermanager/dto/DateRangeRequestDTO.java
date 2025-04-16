@@ -1,6 +1,6 @@
 package com.ordermanager.dto;
 
-public class DateRangeRequest {
+public class DateRangeRequestDTO {
     private String startDate;
     private String endDate;
 

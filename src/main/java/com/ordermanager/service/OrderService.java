@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -131,18 +132,23 @@ public class OrderService {
     }
 
     public List<Order> searchOrdersByNameAndDescription(String name, String description) {
-        return orderRepository.findByProductNameAndDescription(name, description);
+
+        List<Order> orders = orderRepository.findByProductNameAndDescription(name, description);
+
+        return Optional.ofNullable(orders)
+                .filter(list -> !list.isEmpty())
+                .orElseThrow(() -> new EntityNotFoundException("No orders found for name: " + name + " and description " + description));
     }
 
     public List<Order> filterOrdersByDateRange(String startDate, String endDate) {
         LocalDateTime startDateTime = LocalDateTime.parse(startDate);
         LocalDateTime endDateTime = LocalDateTime.parse(endDate);
-        try {
-            return orderRepository.findByDateRange(startDateTime, endDateTime);
-        } catch (Exception e) {
-            logger.error("Error occurred while filtering orders by date range: {}", e.getMessage());
-            throw new RuntimeException("Failed to filter orders by date range", e);
-        }
+
+        List<Order> orders = orderRepository.findByDateRange(startDateTime, endDateTime);
+
+        return Optional.ofNullable(orders)
+                .filter(list -> !list.isEmpty())
+                .orElseThrow(() -> new EntityNotFoundException("No orders found for range: " + startDate + " to " + endDate));
     }
 
 }

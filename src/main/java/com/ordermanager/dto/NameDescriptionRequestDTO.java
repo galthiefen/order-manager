@@ -1,6 +1,6 @@
 package com.ordermanager.dto;
 
-public class NameDescriptionRequest {
+public class NameDescriptionRequestDTO {
 
     private String name;
     private String description;
