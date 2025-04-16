@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -47,7 +48,13 @@ class OrderServiceTest {
 
     @Test
     void shouldReturnAllOrders() {
-        when(orderRepository.findAll()).thenReturn(List.of(new Order(), new Order()));
+        Order order1 = new Order();
+        order1.setOrderItems(List.of(new OrderItem())); // Initialize orderItems
+
+        Order order2 = new Order();
+        order2.setOrderItems(List.of(new OrderItem())); // Initialize orderItems
+
+        when(orderRepository.findAll()).thenReturn(List.of(order1, order2));
 
         List<Order> orders = orderService.getAllOrders();
 
@@ -200,5 +207,65 @@ class OrderServiceTest {
 
         assertThrows(EntityNotFoundException.class, () -> orderService.deleteOrder(orderId));
         verify(orderRepository, never()).deleteById(orderId);
+    }
+
+    @Test
+    void shouldSearchOrdersByNameAndDescription() {
+        String name = "Test Product";
+        String description = "Test Description";
+
+        Order order = new Order();
+        order.setOrderId(UUID.randomUUID());
+        order.setOrderItems(List.of(new OrderItem()));
+
+        when(orderRepository.findByProductNameAndDescription(name, description)).thenReturn(List.of(order));
+
+        List<Order> result = orderService.searchOrdersByNameAndDescription(name, description);
+
+        assertEquals(1, result.size());
+        assertEquals(order, result.get(0));
+        verify(orderRepository).findByProductNameAndDescription(name, description);
+    }
+
+    @Test
+    void shouldThrowExceptionWhenNoOrdersFoundByNameAndDescription() {
+        String name = "Nonexistent Product";
+        String description = "Nonexistent Description";
+
+        when(orderRepository.findByProductNameAndDescription(name, description)).thenReturn(List.of());
+
+        assertThrows(EntityNotFoundException.class, () -> orderService.searchOrdersByNameAndDescription(name, description));
+        verify(orderRepository).findByProductNameAndDescription(name, description);
+    }
+
+    @Test
+    void shouldFilterOrdersByDateRange() {
+        String startDate = "2023-01-01T00:00:00";
+        String endDate = "2023-12-31T23:59:59";
+
+        Order order = new Order();
+        order.setOrderId(UUID.randomUUID());
+        order.setOrderItems(List.of(new OrderItem()));
+
+        when(orderRepository.findByDateRange(LocalDateTime.parse(startDate), LocalDateTime.parse(endDate)))
+                .thenReturn(List.of(order));
+
+        List<Order> result = orderService.filterOrdersByDateRange(startDate, endDate);
+
+        assertEquals(1, result.size());
+        assertEquals(order, result.get(0));
+        verify(orderRepository).findByDateRange(LocalDateTime.parse(startDate), LocalDateTime.parse(endDate));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenNoOrdersFoundInDateRange() {
+        String startDate = "2023-01-01T00:00:00";
+        String endDate = "2023-12-31T23:59:59";
+
+        when(orderRepository.findByDateRange(LocalDateTime.parse(startDate), LocalDateTime.parse(endDate)))
+                .thenReturn(List.of());
+
+        assertThrows(EntityNotFoundException.class, () -> orderService.filterOrdersByDateRange(startDate, endDate));
+        verify(orderRepository).findByDateRange(LocalDateTime.parse(startDate), LocalDateTime.parse(endDate));
     }
 }
