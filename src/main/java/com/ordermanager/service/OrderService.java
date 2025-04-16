@@ -6,16 +6,21 @@ import com.ordermanager.model.Product;
 import com.ordermanager.repository.OrderRepository;
 import com.ordermanager.repository.ProductRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
 @Service
 public class OrderService {
+
+    private static final Logger logger = LoggerFactory.getLogger(OrderService.class);
 
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
@@ -27,7 +32,15 @@ public class OrderService {
     }
 
     public List<Order> getAllOrders() {
-        return orderRepository.findAll();
+        List<Order> orders = orderRepository.findAll();
+        for (Order order : orders) {
+            for (OrderItem item : order.getOrderItems()) {
+                if (item.getProduct() != null) {
+                    item.setProductName(item.getProduct().getName());
+                }
+            }
+        }
+        return orders;
     }
 
     public Order getOrderById(UUID orderId) {
@@ -116,4 +129,20 @@ public class OrderService {
         return productRepository.findById(productId)
                 .orElseThrow(() -> new EntityNotFoundException("Product not found for id: " + productId));
     }
+
+    public List<Order> searchOrdersByNameAndDescription(String name, String description) {
+        return orderRepository.findByProductNameAndDescription(name, description);
+    }
+
+    public List<Order> filterOrdersByDateRange(String startDate, String endDate) {
+        LocalDateTime startDateTime = LocalDateTime.parse(startDate);
+        LocalDateTime endDateTime = LocalDateTime.parse(endDate);
+        try {
+            return orderRepository.findByDateRange(startDateTime, endDateTime);
+        } catch (Exception e) {
+            logger.error("Error occurred while filtering orders by date range: {}", e.getMessage());
+            throw new RuntimeException("Failed to filter orders by date range", e);
+        }
+    }
+
 }

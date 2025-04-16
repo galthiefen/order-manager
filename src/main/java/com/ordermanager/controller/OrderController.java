@@ -1,5 +1,7 @@
 package com.ordermanager.controller;
 
+import com.ordermanager.dto.DateRangeRequest;
+import com.ordermanager.dto.NameDescriptionRequest;
 import com.ordermanager.model.Order;
 import com.ordermanager.service.OrderService;
 import org.springframework.http.ResponseEntity;
@@ -42,5 +44,15 @@ public class OrderController {
     public ResponseEntity<Void> deleteOrder(@PathVariable UUID orderId) {
         orderService.deleteOrder(orderId);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/search-by-name-description")
+    public ResponseEntity<List<Order>> searchOrdersByNameAndDescription(@RequestBody NameDescriptionRequest nameDescriptionRequest) {
+        return ResponseEntity.ok(orderService.searchOrdersByNameAndDescription(nameDescriptionRequest.getName(), nameDescriptionRequest.getDescription()));
+    }
+
+    @GetMapping("/filter-by-date-range")
+    public ResponseEntity<List<Order>> filterOrdersByDateRange(@RequestBody DateRangeRequest dateRangeRequest) {
+        return ResponseEntity.ok(orderService.filterOrdersByDateRange(dateRangeRequest.getStartDate(), dateRangeRequest.getEndDate()));
     }
 }

@@ -4,6 +4,7 @@ import com.ordermanager.model.Order;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,4 +23,13 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
 
     @EntityGraph(attributePaths = {"orderItems", "orderItems.product"})
     Order findWithItemsByOrderId(UUID orderId);
+
+    @Query("SELECT DISTINCT o FROM Order o JOIN o.orderItems oi JOIN oi.product p " +
+            "WHERE (:name IS NULL OR p.name LIKE %:name%) AND " +
+            "(:description IS NULL OR p.description LIKE %:description%)")
+    List<Order> findByProductNameAndDescription(@Param("name") String name, @Param("description") String description);
+
+    @Query("SELECT o FROM Order o WHERE o.createdAt BETWEEN :startDate AND :endDate")
+    List<Order> findByDateRange(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+
 }
