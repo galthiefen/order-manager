@@ -66,3 +66,13 @@ INSERT INTO orders (order_id, status, total_amount, shipping_address, payment_me
 INSERT INTO order_items (order_item_id, order_id, product_id, quantity, unit_price, subtotal, created_at, updated_at) VALUES
 (RANDOM_UUID(), (SELECT order_id FROM orders LIMIT 1 OFFSET 0), (SELECT product_id FROM products LIMIT 1 OFFSET 0), 2, 19.99, 39.98, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (RANDOM_UUID(), (SELECT order_id FROM orders LIMIT 1 OFFSET 1), (SELECT product_id FROM products LIMIT 1 OFFSET 2), 1, 39.99, 39.99, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+```
+
+### Open Points
+
+1. **Add Logs in Application**  
+
+2. **Add Integration Tests/Automated Tests**  
+
+3. **Add Elasticsearch Integration**  
