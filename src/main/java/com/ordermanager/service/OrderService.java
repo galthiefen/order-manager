@@ -6,6 +6,7 @@ import com.ordermanager.model.Product;
 import com.ordermanager.repository.OrderRepository;
 import com.ordermanager.repository.ProductRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.OptimisticLockException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,7 +65,7 @@ public class OrderService {
             }
 
             product.setInventoryCount(product.getInventoryCount() - item.getQuantity());
-            productRepository.save(product);
+            saveProduct(product);
 
             item.setProduct(product);
             item.setUnitPrice(product.getPrice());
@@ -83,7 +84,7 @@ public class OrderService {
         for (OrderItem item : existingOrder.getOrderItems()) {
             Product product = getProductByProductId(item.getProductId());
             product.setInventoryCount(product.getInventoryCount() + item.getQuantity());
-            productRepository.save(product);
+            saveProduct(product);
         }
 
         existingOrder.setStatus(updatedOrder.getStatus());
@@ -101,7 +102,7 @@ public class OrderService {
             }
 
             product.setInventoryCount(product.getInventoryCount() - item.getQuantity());
-            productRepository.save(product);
+            saveProduct(product);
 
             item.setUnitPrice(product.getPrice());
             item.setSubtotal(product.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())));
@@ -118,20 +119,10 @@ public class OrderService {
         for (OrderItem item : order.getOrderItems()) {
             Product product = getProductByProductId(item.getProductId());
             product.setInventoryCount(product.getInventoryCount() + item.getQuantity());
-            productRepository.save(product);
+            saveProduct(product);
         }
 
         orderRepository.deleteById(orderId);
-    }
-
-    private Order getOrderByOrderId(UUID orderId) {
-        return orderRepository.findById(orderId)
-                .orElseThrow(() -> new EntityNotFoundException("Order not found for id: " + orderId));
-    }
-
-    private Product getProductByProductId(UUID productId) {
-        return productRepository.findById(productId)
-                .orElseThrow(() -> new EntityNotFoundException("Product not found for id: " + productId));
     }
 
     public List<Order> searchOrdersByNameAndDescription(String name, String description) {
@@ -152,6 +143,24 @@ public class OrderService {
         return Optional.ofNullable(orders)
                 .filter(list -> !list.isEmpty())
                 .orElseThrow(() -> new EntityNotFoundException("No orders found for range: " + startDate + " to " + endDate));
+    }
+
+    private void saveProduct(Product product) {
+        try {
+            productRepository.save(product);
+        } catch (OptimisticLockException e) {
+            throw new IllegalStateException("Concurrent update detected for product: " + product.getName());
+        }
+    }
+
+    private Order getOrderByOrderId(UUID orderId) {
+        return orderRepository.findById(orderId)
+                .orElseThrow(() -> new EntityNotFoundException("Order not found for id: " + orderId));
+    }
+
+    private Product getProductByProductId(UUID productId) {
+        return productRepository.findById(productId)
+                .orElseThrow(() -> new EntityNotFoundException("Product not found for id: " + productId));
     }
 
 }

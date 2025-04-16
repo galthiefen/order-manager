@@ -43,6 +43,9 @@ public class Product {
     @JsonManagedReference("product-orderItems")
     private List<OrderItem> orderItems;
 
+    @Version
+    private int version;
+
     public UUID getProductId() {
         return productId;
     }
