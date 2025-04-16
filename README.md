@@ -39,7 +39,7 @@ A Postman collection is provided to test the APIs. You can find the collection f
 - Ensure the `application.properties` file is correctly configured for your environment.
 - If you encounter issues, check the application logs for errors.
 
-### Login to H2
+### Login to H2 Database
 - URL: http://localhost:8080/h2-console
 - JDBC URL: jdbc:h2:mem:testdb  --> *setting manually from web page*
 - User: sa
