@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static java.util.Collections.emptyList;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -59,6 +60,14 @@ class OrderServiceTest {
         List<Order> orders = orderService.getAllOrders();
 
         assertEquals(2, orders.size());
+        verify(orderRepository).findAll();
+    }
+
+    @Test
+    void shouldThrowExceptionWhenNoOrdersExist() {
+        when(orderRepository.findAll()).thenReturn(emptyList());
+
+        assertThrows(EntityNotFoundException.class, () -> orderService.getAllOrders());
         verify(orderRepository).findAll();
     }
 

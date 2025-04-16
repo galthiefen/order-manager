@@ -41,7 +41,10 @@ public class OrderService {
                 }
             }
         }
-        return orders;
+
+        return Optional.of(orders)
+                .filter(list -> !list.isEmpty())
+                .orElseThrow(() -> new EntityNotFoundException("No orders found"));
     }
 
     public Order getOrderById(UUID orderId) {
